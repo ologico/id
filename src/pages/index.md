@@ -5,3 +5,5 @@ title: Infinite Logic PBC
 
 # Homepage
 
+[About](about)
+
