@@ -39,9 +39,36 @@ export async function register(
       publicKey: publicKeyCredentialCreationOptions
     });
     if (credential) {
+      localStorage.setItem(credential.id, displayName);
       return `Welcome, ${displayName}`;
     } else {
       return "Registration cancelled.";
+    }
+  } catch (error) {
+    return `Error: ${error instanceof Error ? error.message : String(error)}`;
+  }
+}
+
+export async function login(): Promise<string> {
+  const challenge = new Uint8Array(32);
+  crypto.getRandomValues(challenge);
+
+  const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
+    challenge,
+    allowCredentials: [],
+    userVerification: "required",
+    timeout: 60000
+  };
+
+  try {
+    const credential = await navigator.credentials.get({
+      publicKey: publicKeyCredentialRequestOptions
+    });
+    if (credential) {
+      const stored = localStorage.getItem(credential.id);
+      return `Welcome back, ${stored || credential.id}`;
+    } else {
+      return "Login cancelled.";
     }
   } catch (error) {
     return `Error: ${error instanceof Error ? error.message : String(error)}`;
