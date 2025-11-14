@@ -7,6 +7,8 @@ export async function register(
 
   const userId = new Uint8Array(16);
   crypto.getRandomValues(userId);
+  displayName = displayName || name || "Human";
+  name = name || "human";
 
   const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions =
     {
@@ -17,8 +19,8 @@ export async function register(
       },
       user: {
         id: userId,
-        name: name || "human",
-        displayName: displayName || name || "Human"
+        name: name,
+        displayName: displayName
       },
       pubKeyCredParams: [
         { alg: -7, type: "public-key" }, // ES256
@@ -37,7 +39,7 @@ export async function register(
       publicKey: publicKeyCredentialCreationOptions
     });
     if (credential) {
-      return `Registration successful! Credential ID: ${credential.id}`;
+      return `Welcome, ${displayName}`;
     } else {
       return "Registration cancelled.";
     }
