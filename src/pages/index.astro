@@ -6,8 +6,8 @@ const allPages = await Astro.glob("./*.{md,astro}");
 
 function fallbackTitle(file) {
   // file might be "./login.astro" or "login.md"
-  const base = file.split("/").pop();               // get "login.astro"
-  const name = base.replace(/\.(md|astro)$/, "");   // get "login"
+  const base = file.split("/").pop(); // get "login.astro"
+  const name = base.replace(/\.(md|astro)$/, ""); // get "login"
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
@@ -27,11 +27,12 @@ const pages = allPages
   <h2>Pages</h2>
 
   <ul>
-    {pages.map((page) => (
-      <li>
-        <a href={page.url}>{page.title}</a>
-      </li>
-    ))}
+    {
+      pages.map((page) => (
+        <li>
+          <a href={page.url}>{page.title}</a>
+        </li>
+      ))
+    }
   </ul>
 </Layout>
-
