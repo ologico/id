@@ -4,7 +4,7 @@ title: Infinite Logic PBC
 ---
 # Infinite Logic
 
-An internet for natural inteligence, built by artificial intelligence.
+An internet for humans, built by ai.
 
 [About](about)
 
