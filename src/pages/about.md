@@ -5,4 +5,4 @@ title: About
 
 # About
 
-Infinite Logic is a public benefit corporation. 
+Infinite Logic is a public benefit corporation.

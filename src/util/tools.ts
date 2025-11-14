@@ -13,28 +13,28 @@ export async function register(
       challenge,
       rp: {
         name: "Infinite Logic",
-        id: window.location.hostname,
+        id: window.location.hostname
       },
       user: {
         id: userId,
         name: name || "human",
-        displayName: displayName || name || "Human",
+        displayName: displayName || name || "Human"
       },
       pubKeyCredParams: [
         { alg: -7, type: "public-key" }, // ES256
-        { alg: -257, type: "public-key" }, // RS256
+        { alg: -257, type: "public-key" } // RS256
       ],
       authenticatorSelection: {
         authenticatorAttachment: "platform",
-        userVerification: "required",
+        userVerification: "required"
       },
       timeout: 60000,
-      attestation: "direct",
+      attestation: "direct"
     };
 
   try {
     const credential = await navigator.credentials.create({
-      publicKey: publicKeyCredentialCreationOptions,
+      publicKey: publicKeyCredentialCreationOptions
     });
     if (credential) {
       return `Registration successful! Credential ID: ${credential.id}`;

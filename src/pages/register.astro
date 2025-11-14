@@ -1,21 +1,21 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
 ---
+
 <Layout>
-	<button id="register-btn">Register</button>
+  <button id="register-btn">Register</button>
 
-	<div id="result"></div>
+  <div id="result"></div>
 
-	<script>
-		import { register } from '../util/tools.ts';
+  <script>
+    import { register } from "../util/tools.ts";
 
-	  const button = document.getElementById('register-btn');
-	  const resultDiv = document.getElementById('result');
+    const button = document.getElementById("register-btn");
+    const resultDiv = document.getElementById("result");
 
-	  button.addEventListener('click', async () => {
-	    const result = await register();
-	    resultDiv.textContent = result;
-	  });
-	</script>
+    button.addEventListener("click", async () => {
+      const result = await register();
+      resultDiv.textContent = result;
+    });
+  </script>
 </Layout>
-
