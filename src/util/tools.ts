@@ -1,3 +1,6 @@
+//
+// Registration
+//
 export async function register(
   name?: string,
   displayName?: string
@@ -7,6 +10,7 @@ export async function register(
 
   const userId = new Uint8Array(16);
   crypto.getRandomValues(userId);
+
   displayName = displayName || name || "Human";
   name = name || "human";
 
@@ -19,8 +23,8 @@ export async function register(
       },
       user: {
         id: userId,
-        name: name,
-        displayName: displayName
+        name,
+        displayName
       },
       pubKeyCredParams: [
         { alg: -7, type: "public-key" }, // ES256
@@ -31,31 +35,57 @@ export async function register(
         userVerification: "required"
       },
       timeout: 60000,
-      attestation: "direct"
+      attestation: "none"
     };
 
   try {
     const credential = await navigator.credentials.create({
       publicKey: publicKeyCredentialCreationOptions
     });
-    if (credential) {
-      localStorage.setItem(credential.id, displayName);
-      return `Welcome, ${displayName}`;
-    } else {
+
+    if (!credential) {
       return "Registration cancelled.";
     }
+
+    // Store the credential name in localStorage
+    const credId = credential.id;
+    localStorage.setItem(`webauthn:${credId}`, displayName);
+
+    return `Welcome, ${displayName}`;
   } catch (error) {
     return `Error: ${error instanceof Error ? error.message : String(error)}`;
   }
 }
 
+//
+// Login
+//
 export async function login(): Promise<string> {
   const challenge = new Uint8Array(32);
   crypto.getRandomValues(challenge);
 
+  // Gather known credential IDs from localStorage
+  const storedCredentialIds = Object.keys(localStorage)
+    .filter((key) => key.startsWith("webauthn:"))
+    .map((key) => key.replace("webauthn:", ""));
+
+  // Convert each credential ID into the format expected by WebAuthn
+  const allowCredentials = storedCredentialIds.map((id) => {
+    // Convert base64url or plain string into bytes
+    const rawId = Uint8Array.from(
+      atob(id.replace(/-/g, "+").replace(/_/g, "/")),
+      (c) => c.charCodeAt(0)
+    );
+
+    return {
+      id: rawId,
+      type: "public-key"
+    };
+  });
+
   const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
     challenge,
-    allowCredentials: [],
+    allowCredentials,
     userVerification: "required",
     timeout: 60000
   };
@@ -64,12 +94,15 @@ export async function login(): Promise<string> {
     const credential = await navigator.credentials.get({
       publicKey: publicKeyCredentialRequestOptions
     });
-    if (credential) {
-      const stored = localStorage.getItem(credential.id);
-      return `Welcome back, ${stored || credential.id}`;
-    } else {
+
+    if (!credential) {
       return "Login cancelled.";
     }
+
+    const credId = credential.id;
+    const storedName = localStorage.getItem(`webauthn:${credId}`);
+
+    return `Welcome back, ${storedName || credId}`;
   } catch (error) {
     return `Error: ${error instanceof Error ? error.message : String(error)}`;
   }

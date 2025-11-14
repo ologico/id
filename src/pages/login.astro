@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <button id="login-btn">Login</button>
+
+  <div id="result"></div>
+
+  <script>
+    import { login } from "../util/tools.ts";
+
+    const button = document.getElementById("login-btn");
+    const resultDiv = document.getElementById("result");
+
+    button.addEventListener("click", async () => {
+      const result = await login();
+      resultDiv.textContent = result;
+    });
+  </script>
+</Layout>
