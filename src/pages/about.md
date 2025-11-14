@@ -5,5 +5,4 @@ title: About
 
 # About
 
-This is our corp about page
-
+Infinite Logic is a public benefit corporation. 
