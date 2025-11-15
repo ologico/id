@@ -43,6 +43,8 @@ async function verifyAssertion(
     // Compare arrays directly
     if (JSON.stringify(receivedChallenge) !== JSON.stringify(challenge)) {
       console.log('❌ Challenge verification failed');
+      console.log('Received length:', receivedChallenge.length);
+      console.log('Expected length:', challenge.length);
       return false;
     }
     console.log('✅ Challenge verification passed');

@@ -22,7 +22,13 @@ export async function POST(context: APIContext) {
   await session.set("webauthn-challenge", Array.from(challenge));
   await session.set("webauthn-credId", credId);
 
-  return new Response(JSON.stringify({ challenge: Array.from(challenge) }), {
+  // Convert challenge to base64url for client
+  const challengeBase64url = btoa(String.fromCharCode(...challenge))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+
+  return new Response(JSON.stringify({ challenge: challengeBase64url }), {
     headers: { "Content-Type": "application/json" }
   });
 }

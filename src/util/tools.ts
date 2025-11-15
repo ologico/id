@@ -119,7 +119,14 @@ export async function login(): Promise<string> {
     body: JSON.stringify({ credId })
   }).then((r) => r.json());
 
-  const challenge = new Uint8Array(start.challenge);
+  // Convert base64url challenge back to Uint8Array
+  const challengeBase64 = start.challenge.replace(/-/g, '+').replace(/_/g, '/');
+  const paddedChallenge = challengeBase64 + '='.repeat((4 - challengeBase64.length % 4) % 4);
+  const challenge = new Uint8Array(
+    atob(paddedChallenge)
+      .split('')
+      .map(c => c.charCodeAt(0))
+  );
 
   //
   // 3. Convert credId to raw bytes
