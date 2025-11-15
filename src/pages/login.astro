@@ -2,7 +2,10 @@
 import Layout from "../layouts/Layout.astro";
 
 const returnUrl = Astro.url.searchParams.get("return") || "/";
-console.log(returnUrl);
+console.log("Full URL:", Astro.url.toString());
+console.log("Search params:", Astro.url.searchParams.toString());
+console.log("Return param:", Astro.url.searchParams.get("return"));
+console.log("Final returnUrl:", returnUrl);
 ---
 
 <Layout>
