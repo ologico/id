@@ -51,8 +51,7 @@ const success = Astro.url.searchParams.get("success");
     </div>
   ) : (
     <div>
-      <p>You are not logged in. Redirecting to login...</p>
-      <script>
+      <script client:load>
         // Only redirect if we're actually in the "not logged in" section
         window.location.href = '/login?return=' + encodeURIComponent(window.location.pathname);
       </script>
