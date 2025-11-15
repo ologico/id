@@ -1,7 +1,7 @@
 import { db, Cred } from "astro:db";
 import { writeFileSync } from "fs";
 
-async function generateSeed() {
+export default async function generateSeed() {
   try {
     // Fetch all current credentials from the database
     const creds = await db.select().from(Cred).all();
@@ -26,5 +26,3 @@ ${creds.map(cred =>
     console.error('Error generating seed:', error);
   }
 }
-
-generateSeed();
