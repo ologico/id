@@ -13,8 +13,7 @@ import Layout from "../layouts/Layout.astro";
     const resultDiv = document.getElementById("result");
 
     button.addEventListener("click", async () => {
-      const credId = localStorage.getItem("webauthn:id");
-      const result = await login(credId); // pass credId into login()
+      const result = await login(); // pass credId into login()
       resultDiv.textContent = result;
     });
   </script>
