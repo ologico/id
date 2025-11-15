@@ -15,6 +15,45 @@ function base64urlToUint8Array(base64url: string): Uint8Array {
   );
 }
 
+function derToP1363(derSignature: Uint8Array): Uint8Array {
+  // Parse DER-encoded signature to extract r and s values
+  let offset = 0;
+  
+  // Skip SEQUENCE tag and length
+  if (derSignature[offset] !== 0x30) throw new Error('Invalid DER signature');
+  offset += 2; // Skip tag and length
+  
+  // Parse r value
+  if (derSignature[offset] !== 0x02) throw new Error('Invalid DER signature');
+  offset++; // Skip INTEGER tag
+  let rLength = derSignature[offset++];
+  let r = derSignature.slice(offset, offset + rLength);
+  offset += rLength;
+  
+  // Parse s value  
+  if (derSignature[offset] !== 0x02) throw new Error('Invalid DER signature');
+  offset++; // Skip INTEGER tag
+  let sLength = derSignature[offset++];
+  let s = derSignature.slice(offset, offset + sLength);
+  
+  // Remove leading zero bytes if present (DER encoding requirement)
+  if (r[0] === 0x00) r = r.slice(1);
+  if (s[0] === 0x00) s = s.slice(1);
+  
+  // Pad to 32 bytes for P-256
+  const rPadded = new Uint8Array(32);
+  const sPadded = new Uint8Array(32);
+  rPadded.set(r, 32 - r.length);
+  sPadded.set(s, 32 - s.length);
+  
+  // Concatenate r and s for P1363 format
+  const p1363Signature = new Uint8Array(64);
+  p1363Signature.set(rPadded, 0);
+  p1363Signature.set(sPadded, 32);
+  
+  return p1363Signature;
+}
+
 async function verifyAssertion(
   assertion: any,
   storedPublicKey: string,
@@ -93,9 +132,13 @@ async function verifyAssertion(
     );
     console.log('✅ Public key imported successfully');
 
+    // Convert DER signature to P1363 format for Web Crypto API
+    const p1363Signature = derToP1363(signature);
+    
     // Verify the signature
     console.log('Verifying signature...');
-    console.log('Signature length:', signature.length);
+    console.log('Original signature length:', signature.length);
+    console.log('P1363 signature length:', p1363Signature.length);
     console.log('Signed data length:', signedData.length);
     
     const isValid = await crypto.subtle.verify(
@@ -104,7 +147,7 @@ async function verifyAssertion(
         hash: 'SHA-256'
       },
       publicKey,
-      signature,
+      p1363Signature,
       signedData
     );
 
