@@ -14,11 +14,25 @@ export async function POST({ request }) {
     );
   }
 
+  if (!body.publicKey) {
+    return new Response(
+      JSON.stringify({ error: "publicKey is required" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  if (body.signCount === undefined || body.signCount === null) {
+    return new Response(
+      JSON.stringify({ error: "signCount is required" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   // Insert into DB
   const result = await db.insert(Cred).values({
     id: body.id,
-    publicKey: body.publicKey || "...",
-    signCount: body.signCount || 0
+    publicKey: body.publicKey,
+    signCount: body.signCount
   });
 
   // Return response with 201 Created
