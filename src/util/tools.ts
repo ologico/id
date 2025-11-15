@@ -1,6 +1,9 @@
 //
 // Registration
 //
+//
+export const authStorageKey = "webauthn:id:";
+
 export async function register(
   name?: string,
   displayName?: string
@@ -27,7 +30,7 @@ export async function register(
         displayName
       },
       pubKeyCredParams: [
-        { alg: -7, type: "public-key" }, // ES256
+        { alg: -7, type: "public-key" } // ES256
       ],
       authenticatorSelection: {
         authenticatorAttachment: "platform",
@@ -48,7 +51,9 @@ export async function register(
 
     // Store the credential name in localStorage
     const credId = credential.id;
-    const locale = navigator.language || "pr-BR";
+    const locale = navigator.language || "eo-001";
+
+    localStorage.setItem(`${authStorageKey}${credId}`, locale);
 
     // Send credential record to your API
     await fetch("http://localhost:4321/creds", {
@@ -75,9 +80,10 @@ export async function login(): Promise<string> {
 
   // Gather known credential IDs from localStorage
   const storedCredentialIds = Object.keys(localStorage)
-    .filter((key) => key.startsWith("webauthn:"))
-    .map((key) => key.replace("webauthn:", ""));
+    .filter((key) => key.startsWith(authStorageKey))
+    .map((key) => key.replace(authStorageKey, ""));
 
+    console.log(storedCredentialIds);
   // Convert each credential ID into the format expected by WebAuthn
   const allowCredentials = storedCredentialIds.map((id) => {
     // Convert base64url or plain string into bytes
@@ -107,11 +113,7 @@ export async function login(): Promise<string> {
     if (!credential) {
       return "Login cancelled.";
     }
-
-    const credId = credential.id;
-    const storedName = localStorage.getItem(`webauthn:${credId}`);
-
-    return `Welcome back, ${storedName || credId}`;
+    return `Welcome back`;
   } catch (error) {
     return `Error: ${error instanceof Error ? error.message : String(error)}`;
   }

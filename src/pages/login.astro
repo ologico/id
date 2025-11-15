@@ -4,7 +4,6 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout>
   <button id="login-btn">Login</button>
-
   <div id="result"></div>
 
   <script>
@@ -14,7 +13,20 @@ import Layout from "../layouts/Layout.astro";
     const resultDiv = document.getElementById("result");
 
     button.addEventListener("click", async () => {
-      const result = await login();
+      // get the first credential stored
+      const storageKey = "webauthn:id:";
+      const keys = Object.keys(localStorage).filter((k) =>
+        k.startsWith(storageKey)
+      );
+
+      if (keys.length === 0) {
+        resultDiv.textContent = "No credential found in this browser.";
+        return;
+      }
+
+      const credId = keys[0].replace(storageKey, "");
+
+      const result = await login(credId); // pass credId into login()
       resultDiv.textContent = result;
     });
   </script>

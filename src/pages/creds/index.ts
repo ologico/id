@@ -31,9 +31,8 @@ export async function POST({ request }) {
       headers: {
         "Content-Type": "application/json",
         // Optional but recommended in REST APIs
-        "Location": `/creds/${body.id}`
+        Location: `/creds/${body.id}`
       }
     }
   );
 }
-
