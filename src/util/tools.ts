@@ -75,46 +75,61 @@ export async function register(
 // Login
 //
 export async function login(): Promise<string> {
-  const challenge = new Uint8Array(32);
-  crypto.getRandomValues(challenge);
-
-  // Gather known credential IDs from localStorage
+  // 1. Load stored credential IDs from localStorage
   const storedCredentialIds = Object.keys(localStorage)
     .filter((key) => key.startsWith(authStorageKey))
     .map((key) => key.replace(authStorageKey, ""));
 
-    console.log(storedCredentialIds);
-  // Convert each credential ID into the format expected by WebAuthn
-  const allowCredentials = storedCredentialIds.map((id) => {
-    // Convert base64url or plain string into bytes
-    const rawId = Uint8Array.from(
-      atob(id.replace(/-/g, "+").replace(/_/g, "/")),
-      (c) => c.charCodeAt(0)
-    );
+  if (storedCredentialIds.length === 0) {
+    return "No registered credentials found.";
+  }
 
-    return {
-      id: rawId,
-      type: "public-key"
-    };
+  const credId = storedCredentialIds[0];
+
+  //
+  // 2. Ask the server for the challenge
+  //
+  const start = await fetch("/auth/start-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include", // important for session cookie
+    body: JSON.stringify({ credId })
+  }).then((r) => r.json());
+
+  const challenge = new Uint8Array(start.challenge);
+
+  //
+  // 3. Convert credId to raw bytes
+  //
+  const rawId = Uint8Array.from(
+    atob(credId.replace(/-/g, "+").replace(/_/g, "/")),
+    (c) => c.charCodeAt(0)
+  );
+
+  //
+  // 4. Ask WebAuthn to sign the challenge
+  //
+  const assertion = await navigator.credentials.get({
+    publicKey: {
+      challenge,
+      allowCredentials: [{ id: rawId, type: "public-key" }],
+      userVerification: "required"
+    }
   });
 
-  const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
-    challenge,
-    allowCredentials,
-    userVerification: "required",
-    timeout: 60000
-  };
+  //
+  // 5. Send the signed challenge back to the server
+  //
+  const res = await fetch("/auth/finish-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(assertion)
+  });
 
-  try {
-    const credential = await navigator.credentials.get({
-      publicKey: publicKeyCredentialRequestOptions
-    });
-
-    if (!credential) {
-      return "Login cancelled.";
-    }
-    return `Welcome back`;
-  } catch (error) {
-    return `Error: ${error instanceof Error ? error.message : String(error)}`;
+  if (res.ok) {
+    return "Welcome back!";
   }
+
+  return "Login failed.";
 }
