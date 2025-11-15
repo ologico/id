@@ -8,6 +8,16 @@ const Cred = defineTable({
   }
 });
 
+const GitHub = defineTable({
+  columns: {
+    humanId: column.text({ primaryKey: true }),
+    githubId: column.text(),
+    username: column.text(),
+    accessToken: column.text(),
+    linkedAt: column.date()
+  }
+});
+
 export default defineDb({
-  tables: { Cred }
+  tables: { Cred, GitHub }
 });
