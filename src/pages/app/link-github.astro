@@ -6,16 +6,12 @@ import { db, GitHub } from "astro:db";
 import { eq } from "astro:db";
 
 const humanId = await Astro.session.get("humanId");
-console.log("DEBUG: humanId from session:", humanId);
-console.log("DEBUG: humanId type:", typeof humanId);
-console.log("DEBUG: humanId truthy?", !!humanId);
 
 let githubAccount = null;
 
 if (humanId) {
   const result = await db.select().from(GitHub).where(eq(GitHub.humanId, humanId)).get();
   githubAccount = result;
-  console.log("DEBUG: githubAccount:", githubAccount);
 }
 
 const success = Astro.url.searchParams.get("success");
@@ -57,10 +53,8 @@ const success = Astro.url.searchParams.get("success");
     <div>
       <p>You are not logged in. Redirecting to login...</p>
       <script>
-        console.log("DEBUG: Client-side thinks user is not logged in");
-        console.log("DEBUG: Current URL:", window.location.href);
         // Redirect to login with return URL
-	// window.location.href = '/login?return=' + encodeURIComponent(window.location.pathname);
+        window.location.href = '/login?return=' + encodeURIComponent(window.location.pathname);
       </script>
     </div>
   )}
