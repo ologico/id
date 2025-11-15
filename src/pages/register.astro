@@ -13,6 +13,8 @@ import { db } from "astro:db";
 
     const button = document.getElementById("register-btn");
     const resultDiv = document.getElementById("result");
+    console.log("hell");
+
 
     button.addEventListener("click", async () => {
       const result = await register();
