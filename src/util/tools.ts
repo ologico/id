@@ -11,8 +11,8 @@ export async function register(
   const userId = new Uint8Array(16);
   crypto.getRandomValues(userId);
 
-  displayName = displayName || name || "Human";
-  name = name || "human";
+  name = "human";
+  displayName = "Human";
 
   const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions =
     {
@@ -28,7 +28,6 @@ export async function register(
       },
       pubKeyCredParams: [
         { alg: -7, type: "public-key" }, // ES256
-        { alg: -257, type: "public-key" } // RS256
       ],
       authenticatorSelection: {
         authenticatorAttachment: "platform",
@@ -49,7 +48,17 @@ export async function register(
 
     // Store the credential name in localStorage
     const credId = credential.id;
-    localStorage.setItem(`webauthn:${credId}`, displayName);
+    const locale = navigator.language || "pr-BR";
+
+    // Send credential record to your API
+    await fetch("http://localhost:4321/creds", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: credId,
+        locale: locale
+      })
+    });
 
     return `Welcome, ${displayName}`;
   } catch (error) {
