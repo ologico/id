@@ -1,7 +1,3 @@
-//
-// Registration
-//
-//
 export const authStorageKey = "webauthn:id";
 
 export async function register(
@@ -54,12 +50,16 @@ export async function register(
 
     localStorage.setItem(`${authStorageKey}`, credId);
 
+    // Extract and encode the public key
+    const publicKey = btoa(String.fromCharCode(...new Uint8Array(credential.response.getPublicKey())));
+
     // Send credential record to your API
     await fetch("http://localhost:4321/creds", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: credId
+        id: credId,
+        publicKey: publicKey
       })
     });
 

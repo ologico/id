@@ -17,7 +17,7 @@ export async function POST({ request }) {
   // Insert into DB
   const result = await db.insert(Cred).values({
     id: body.id,
-    publicKey: "...",
+    publicKey: body.publicKey || "...",
     signCount: 0
   });
 
