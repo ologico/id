@@ -54,7 +54,7 @@ const success = Astro.url.searchParams.get("success");
       <p>You are not logged in. Redirecting to login...</p>
       <script>
         // Redirect to login with return URL
-        window.location.href = '/login?return=' + encodeURIComponent(window.location.pathname);
+	      // window.location.href = '/login?return=' + encodeURIComponent(window.location.pathname);
       </script>
     </div>
   )}
