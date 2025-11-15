@@ -8,6 +8,11 @@ async function verifyAssertion(
   storedPublicKey: string,
   challenge: number[]
 ): Promise<boolean> {
+  console.log('=== Starting verifyAssertion ===');
+  console.log('Challenge:', challenge);
+  console.log('StoredPublicKey length:', storedPublicKey.length);
+  console.log('Assertion ID:', assertion.id);
+  
   try {
     // Decode the assertion components
     const authenticatorData = new Uint8Array(
@@ -30,20 +35,30 @@ async function verifyAssertion(
 
     // Parse client data to verify challenge
     const clientData = JSON.parse(new TextDecoder().decode(clientDataJSON));
+    console.log('Client data:', clientData);
+    
     const receivedChallenge = Array.from(new Uint8Array(
       atob(clientData.challenge).split('').map(c => c.charCodeAt(0))
     ));
+    
+    console.log('Received challenge:', receivedChallenge);
+    console.log('Expected challenge:', challenge);
 
     // Compare arrays directly
     if (JSON.stringify(receivedChallenge) !== JSON.stringify(challenge)) {
+      console.log('❌ Challenge verification failed');
       return false;
     }
+    console.log('✅ Challenge verification passed');
 
     // Verify origin
+    console.log('Client origin:', clientData.origin);
     if (clientData.origin !== `https://${new URL(clientData.origin).hostname}` && 
         clientData.origin !== `http://${new URL(clientData.origin).hostname}`) {
+      console.log('❌ Origin verification failed');
       return false;
     }
+    console.log('✅ Origin verification passed');
 
     // Create the data that was signed
     const clientDataHash = await crypto.subtle.digest('SHA-256', clientDataJSON);
@@ -61,6 +76,8 @@ async function verifyAssertion(
     // Import the public key for verification
     // Note: This is a simplified approach. In production, you'd need to properly
     // parse the CBOR-encoded public key to extract the actual key parameters
+    console.log('Attempting to import public key, bytes length:', publicKeyBytes.length);
+    
     const publicKey = await crypto.subtle.importKey(
       'spki',
       publicKeyBytes,
@@ -71,8 +88,13 @@ async function verifyAssertion(
       false,
       ['verify']
     );
+    console.log('✅ Public key imported successfully');
 
     // Verify the signature
+    console.log('Verifying signature...');
+    console.log('Signature length:', signature.length);
+    console.log('Signed data length:', signedData.length);
+    
     const isValid = await crypto.subtle.verify(
       {
         name: 'ECDSA',
@@ -83,9 +105,10 @@ async function verifyAssertion(
       signedData
     );
 
+    console.log('Signature verification result:', isValid);
     return isValid;
   } catch (error) {
-    console.error('Verification error:', error);
+    console.error('❌ Verification error:', error);
     return false;
   }
 }
