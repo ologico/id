@@ -3,6 +3,18 @@ export const prerender = false;
 import type { APIContext } from "astro";
 import { db, eq, Cred } from "astro:db";
 
+function base64urlToUint8Array(base64url: string): Uint8Array {
+  // Convert base64url to base64
+  const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+  // Add padding if needed
+  const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
+  return new Uint8Array(
+    atob(padded)
+      .split('')
+      .map(c => c.charCodeAt(0))
+  );
+}
+
 async function verifyAssertion(
   assertion: any,
   storedPublicKey: string,
@@ -14,32 +26,16 @@ async function verifyAssertion(
   console.log('Assertion ID:', assertion.id);
   
   try {
-    // Decode the assertion components
-    const authenticatorData = new Uint8Array(
-      atob(assertion.response.authenticatorData)
-        .split('')
-        .map(c => c.charCodeAt(0))
-    );
-    
-    const clientDataJSON = new Uint8Array(
-      atob(assertion.response.clientDataJSON)
-        .split('')
-        .map(c => c.charCodeAt(0))
-    );
-    
-    const signature = new Uint8Array(
-      atob(assertion.response.signature)
-        .split('')
-        .map(c => c.charCodeAt(0))
-    );
+    // Decode the assertion components using base64url decoder
+    const authenticatorData = base64urlToUint8Array(assertion.response.authenticatorData);
+    const clientDataJSON = base64urlToUint8Array(assertion.response.clientDataJSON);
+    const signature = base64urlToUint8Array(assertion.response.signature);
 
     // Parse client data to verify challenge
     const clientData = JSON.parse(new TextDecoder().decode(clientDataJSON));
     console.log('Client data:', clientData);
     
-    const receivedChallenge = Array.from(new Uint8Array(
-      atob(clientData.challenge).split('').map(c => c.charCodeAt(0))
-    ));
+    const receivedChallenge = Array.from(base64urlToUint8Array(clientData.challenge));
     
     console.log('Received challenge:', receivedChallenge);
     console.log('Expected challenge:', challenge);
@@ -67,11 +63,7 @@ async function verifyAssertion(
     signedData.set(new Uint8Array(clientDataHash), authenticatorData.length);
 
     // Decode the stored public key (base64 -> CBOR -> key)
-    const publicKeyBytes = new Uint8Array(
-      atob(storedPublicKey)
-        .split('')
-        .map(c => c.charCodeAt(0))
-    );
+    const publicKeyBytes = base64urlToUint8Array(storedPublicKey);
 
     // Import the public key for verification
     // Note: This is a simplified approach. In production, you'd need to properly
