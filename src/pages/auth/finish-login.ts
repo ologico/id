@@ -49,9 +49,14 @@ async function verifyAssertion(
 
     // Verify origin
     console.log('Client origin:', clientData.origin);
-    if (clientData.origin !== `https://${new URL(clientData.origin).hostname}` && 
-        clientData.origin !== `http://${new URL(clientData.origin).hostname}`) {
+    const expectedOrigins = [
+      'http://localhost:4321',
+      'https://localhost:4321'
+    ];
+    
+    if (!expectedOrigins.includes(clientData.origin)) {
       console.log('❌ Origin verification failed');
+      console.log('Expected origins:', expectedOrigins);
       return false;
     }
     console.log('✅ Origin verification passed');
