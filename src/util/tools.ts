@@ -172,6 +172,17 @@ export async function login(): Promise<string> {
     });
 
     if (res.ok) {
+      // Check for return URL parameter and redirect
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return');
+      
+      if (returnUrl) {
+        setTimeout(() => {
+          window.location.href = returnUrl;
+        }, 1000);
+        return "Welcome back! Redirecting...";
+      }
+      
       return "Welcome back!";
     }
 
