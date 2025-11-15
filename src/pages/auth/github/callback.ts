@@ -72,7 +72,8 @@ export async function GET(context: any) {
     await session.delete("github-oauth-state");
 
     // Redirect back to link page with success
-    return Response.redirect("/app/link-github?success=true");
+    const redirectUrl = new URL("/app/link-github?success=true", new URL(request.url).origin);
+    return Response.redirect(redirectUrl.toString());
     
   } catch (error) {
     console.error("GitHub OAuth error:", error);
