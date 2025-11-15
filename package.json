@@ -8,7 +8,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "format": "prettier --write .",
-    "generate-seed": "astro run scripts/generate-seed.js"
+    "generate-seed": "astro db execute scripts/generate-seed.js"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.10",
