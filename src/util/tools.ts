@@ -51,7 +51,6 @@ export async function register(
 
     // Store the credential name in localStorage
     const credId = credential.id;
-    const locale = navigator.language || "eo-001";
 
     localStorage.setItem(`${authStorageKey}`, credId);
 
@@ -60,8 +59,7 @@ export async function register(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: credId,
-        locale: locale
+        id: credId
       })
     });
 

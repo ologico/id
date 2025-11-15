@@ -7,9 +7,9 @@ export async function POST({ request }) {
   const body = await request.json();
 
   // Validate required fields
-  if (!body.id || !body.locale) {
+  if (!body.id) {
     return new Response(
-      JSON.stringify({ error: "id and locale are required" }),
+      JSON.stringify({ error: "id is required" }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -17,14 +17,15 @@ export async function POST({ request }) {
   // Insert into DB
   const result = await db.insert(Cred).values({
     id: body.id,
-    locale: body.locale
+    publicKey: "...",
+    signCount: 0
   });
 
   // Return response with 201 Created
   return new Response(
     JSON.stringify({
       status: "created",
-      cred: { id: body.id, locale: body.locale }
+      cred: { id: body.id }
     }),
     {
       status: 201,
