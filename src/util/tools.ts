@@ -54,7 +54,8 @@ export async function register(
 
     // Extract and encode the public key from attestation object
     const attestationResponse = credential.response as AuthenticatorAttestationResponse;
-    const attestation = decode(new Uint8Array(attestationResponse.attestationObject));
+    const attestationBuffer = new Uint8Array(attestationResponse.attestationObject);
+    const attestation = decode(attestationBuffer.buffer.slice(attestationBuffer.byteOffset, attestationBuffer.byteOffset + attestationBuffer.byteLength));
     const authData = new Uint8Array(attestation.authData);
     
     // Extract public key from credential data (starts at offset 55 in authData)
