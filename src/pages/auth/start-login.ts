@@ -7,7 +7,6 @@ export async function POST(context: APIContext) {
   const { request, session } = context;
 
   const { credId } = await request.json();
-  console.log(credId);
   const cred = await db.select().from(Cred).where(eq(Cred.id, credId)).get();
 
   if (!cred) {

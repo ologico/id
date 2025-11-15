@@ -59,11 +59,6 @@ async function verifyAssertion(
   storedPublicKey: string,
   challenge: number[]
 ): Promise<boolean> {
-  console.log('=== Starting verifyAssertion ===');
-  console.log('Challenge:', challenge);
-  console.log('StoredPublicKey length:', storedPublicKey.length);
-  console.log('Assertion ID:', assertion.id);
-  
   try {
     // Decode the assertion components using base64url decoder
     const authenticatorData = base64urlToUint8Array(assertion.response.authenticatorData);
@@ -72,35 +67,22 @@ async function verifyAssertion(
 
     // Parse client data to verify challenge
     const clientData = JSON.parse(new TextDecoder().decode(clientDataJSON));
-    console.log('Client data:', clientData);
-    
     const receivedChallenge = Array.from(base64urlToUint8Array(clientData.challenge));
-    
-    console.log('Received challenge:', receivedChallenge);
-    console.log('Expected challenge:', challenge);
 
     // Compare arrays directly
     if (JSON.stringify(receivedChallenge) !== JSON.stringify(challenge)) {
-      console.log('❌ Challenge verification failed');
-      console.log('Received length:', receivedChallenge.length);
-      console.log('Expected length:', challenge.length);
       return false;
     }
-    console.log('✅ Challenge verification passed');
 
     // Verify origin
-    console.log('Client origin:', clientData.origin);
     const expectedOrigins = [
       'http://localhost:4321',
       'https://localhost:4321'
     ];
     
     if (!expectedOrigins.includes(clientData.origin)) {
-      console.log('❌ Origin verification failed');
-      console.log('Expected origins:', expectedOrigins);
       return false;
     }
-    console.log('✅ Origin verification passed');
 
     // Create the data that was signed
     const clientDataHash = await crypto.subtle.digest('SHA-256', clientDataJSON);
@@ -110,14 +92,10 @@ async function verifyAssertion(
 
     // Parse the stored public key coordinates
     const keyData = JSON.parse(storedPublicKey);
-    console.log('Parsed key data:', keyData);
     
     // Convert base64url coordinates back to Uint8Array
     const x = base64urlToUint8Array(keyData.x + '='.repeat((4 - keyData.x.length % 4) % 4));
     const y = base64urlToUint8Array(keyData.y + '='.repeat((4 - keyData.y.length % 4) % 4));
-    
-    console.log('X coordinate length:', x.length);
-    console.log('Y coordinate length:', y.length);
     
     // Import the public key using raw format with explicit coordinates
     const publicKey = await crypto.subtle.importKey(
@@ -130,17 +108,11 @@ async function verifyAssertion(
       false,
       ['verify']
     );
-    console.log('✅ Public key imported successfully');
 
     // Convert DER signature to P1363 format for Web Crypto API
     const p1363Signature = derToP1363(signature);
     
     // Verify the signature
-    console.log('Verifying signature...');
-    console.log('Original signature length:', signature.length);
-    console.log('P1363 signature length:', p1363Signature.length);
-    console.log('Signed data length:', signedData.length);
-    
     const isValid = await crypto.subtle.verify(
       {
         name: 'ECDSA',
@@ -151,10 +123,9 @@ async function verifyAssertion(
       signedData
     );
 
-    console.log('Signature verification result:', isValid);
     return isValid;
   } catch (error) {
-    console.error('❌ Verification error:', error);
+    console.error('Verification error:', error);
     return false;
   }
 }
