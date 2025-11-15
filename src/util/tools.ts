@@ -2,7 +2,7 @@
 // Registration
 //
 //
-export const authStorageKey = "webauthn:id:";
+export const authStorageKey = "webauthn:id";
 
 export async function register(
   name?: string,
@@ -53,7 +53,7 @@ export async function register(
     const credId = credential.id;
     const locale = navigator.language || "eo-001";
 
-    localStorage.setItem(`${authStorageKey}${credId}`, locale);
+    localStorage.setItem(`${authStorageKey}`, credId);
 
     // Send credential record to your API
     await fetch("http://localhost:4321/creds", {
@@ -76,15 +76,11 @@ export async function register(
 //
 export async function login(): Promise<string> {
   // 1. Load stored credential IDs from localStorage
-  const storedCredentialIds = Object.keys(localStorage)
-    .filter((key) => key.startsWith(authStorageKey))
-    .map((key) => key.replace(authStorageKey, ""));
+  const credId = localStorage.getItem(authStorageKey);
 
-  if (storedCredentialIds.length === 0) {
+  if (!credId) {
     return "No registered credentials found.";
   }
-
-  const credId = storedCredentialIds[0];
 
   //
   // 2. Ask the server for the challenge
