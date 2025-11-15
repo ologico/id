@@ -3,9 +3,12 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
+  <h1>Register</h1>
   <button id="register-btn">Register</button>
 
   <div id="result"></div>
+  
+  <p>Already have an account? <a href="/login">Login here</a></p>
 
   <script>
     import { register } from "../util/tools.ts";
