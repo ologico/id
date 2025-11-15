@@ -8,7 +8,7 @@ const returnUrl = Astro.url.searchParams.get("return") || "/";
   <button id="login-btn">Login</button>
   <div id="result"></div>
 
-  <script define:vars={{ returnUrl }}>
+  <script>
     import { login } from "../util/tools.ts";
 
     const button = document.getElementById("login-btn");
@@ -26,4 +26,6 @@ const returnUrl = Astro.url.searchParams.get("return") || "/";
       }
     });
   </script>
+
+  <script define:vars={{ returnUrl }}></script>
 </Layout>
