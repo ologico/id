@@ -67,17 +67,21 @@ async function verifyAssertion(
     signedData.set(authenticatorData);
     signedData.set(new Uint8Array(clientDataHash), authenticatorData.length);
 
-    // Decode the stored public key (base64 -> CBOR -> key)
-    const publicKeyBytes = base64urlToUint8Array(storedPublicKey);
-
-    // Import the public key for verification
-    // Note: This is a simplified approach. In production, you'd need to properly
-    // parse the CBOR-encoded public key to extract the actual key parameters
-    console.log('Attempting to import public key, bytes length:', publicKeyBytes.length);
+    // Parse the stored public key coordinates
+    const keyData = JSON.parse(storedPublicKey);
+    console.log('Parsed key data:', keyData);
     
+    // Convert base64url coordinates back to Uint8Array
+    const x = base64urlToUint8Array(keyData.x + '='.repeat((4 - keyData.x.length % 4) % 4));
+    const y = base64urlToUint8Array(keyData.y + '='.repeat((4 - keyData.y.length % 4) % 4));
+    
+    console.log('X coordinate length:', x.length);
+    console.log('Y coordinate length:', y.length);
+    
+    // Import the public key using raw format with explicit coordinates
     const publicKey = await crypto.subtle.importKey(
-      'spki',
-      publicKeyBytes,
+      'raw',
+      new Uint8Array([0x04, ...x, ...y]), // 0x04 prefix for uncompressed point
       {
         name: 'ECDSA',
         namedCurve: 'P-256'

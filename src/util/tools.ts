@@ -63,7 +63,20 @@ export async function register(
     const credentialIdLength = (authData[53] << 8) | authData[54];
     const publicKeyStart = 55 + credentialIdLength;
     const publicKeyBytes = authData.slice(publicKeyStart);
-    const publicKey = btoa(String.fromCharCode(...publicKeyBytes));
+    
+    // Parse the CBOR-encoded public key
+    const publicKeyObject = decode(publicKeyBytes.buffer.slice(publicKeyBytes.byteOffset, publicKeyBytes.byteOffset + publicKeyBytes.byteLength));
+    
+    // Extract the x and y coordinates for P-256 (assuming ES256 algorithm)
+    // CBOR key format: 1: key type, 3: algorithm, -1: curve, -2: x coordinate, -3: y coordinate
+    const x = new Uint8Array(publicKeyObject[-2]);
+    const y = new Uint8Array(publicKeyObject[-3]);
+    
+    // Store the coordinates as base64url for later reconstruction
+    const publicKey = JSON.stringify({
+      x: btoa(String.fromCharCode(...x)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+      y: btoa(String.fromCharCode(...y)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+    });
 
     // signCount will be handled server-side during verification
     const signCount = 0;
