@@ -28,7 +28,9 @@ export async function GET(context: any) {
   }
 
   try {
-    // Exchange code for access token using stored redirect URI
+    // Exchange code for access token with dynamic redirect URI
+    const redirectUri = `${new URL(request.url).origin}/auth/oauth/${providerId}/callback`;
+    
     const tokenResponse = await fetch(client.tokenUrl, {
       method: "POST",
       headers: {
@@ -39,7 +41,7 @@ export async function GET(context: any) {
         client_id: client.clientId,
         client_secret: client.clientSecret,
         code: code,
-        redirect_uri: client.redirectUri,
+        redirect_uri: redirectUri,
       }),
     });
 

@@ -18,7 +18,6 @@ const OAuthClient = defineTable({
     tokenUrl: column.text(),
     userInfoUrl: column.text(),
     scopes: column.text(),
-    redirectUri: column.text(),
     createdAt: column.date()
   }
 });

@@ -23,10 +23,12 @@ export async function GET(context: any) {
   const state = crypto.randomUUID();
   await session.set(`oauth-state-${providerId}`, state);
 
-  // Build OAuth authorization URL using stored redirect URI
+  // Build OAuth authorization URL with dynamic redirect URI
+  const redirectUri = `${new URL(context.request.url).origin}/auth/oauth/${providerId}/callback`;
+  
   const authUrl = new URL(client.authUrl);
   authUrl.searchParams.set("client_id", client.clientId);
-  authUrl.searchParams.set("redirect_uri", client.redirectUri);
+  authUrl.searchParams.set("redirect_uri", redirectUri);
   authUrl.searchParams.set("scope", client.scopes);
   authUrl.searchParams.set("state", state);
 
