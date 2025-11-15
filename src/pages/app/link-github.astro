@@ -2,13 +2,36 @@
 export const prerender = false;
 
 import Layout from "../../layouts/Layout.astro";
+
+const humanId = await Astro.session.get("humanId");
 ---
 
 <Layout>
-  <button id="register-btn">Link Github</button>
+  {humanId ? (
+    <div>
+      <p>Logged in as: <strong>{humanId}</strong></p>
+      
+      <h2>Link GitHub Account</h2>
+      <p>Would you like to link your GitHub account to enable additional features?</p>
+      
+      <button id="link-github-btn">Link GitHub</button>
+      <button id="skip-btn">Skip for now</button>
+    </div>
+  ) : (
+    <div>
+      <p>You are not logged in. Please <a href="/login">log in</a> first.</p>
+    </div>
+  )}
 
   <div id="result"></div>
 
   <script>
+    document.getElementById('link-github-btn')?.addEventListener('click', () => {
+      document.getElementById('result').innerHTML = '<p>GitHub linking functionality coming soon...</p>';
+    });
+
+    document.getElementById('skip-btn')?.addEventListener('click', () => {
+      document.getElementById('result').innerHTML = '<p>GitHub linking skipped. You can link your account later.</p>';
+    });
   </script>
 </Layout>
