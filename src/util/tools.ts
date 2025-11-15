@@ -53,13 +53,21 @@ export async function register(
     // Extract and encode the public key
     const publicKey = btoa(String.fromCharCode(...new Uint8Array(credential.response.getPublicKey())));
 
+    // Parse signCount from authenticator data using CBOR
+    import { decode } from 'cbor';
+    const attestation = decode(new Uint8Array(credential.response.attestationObject));
+    const authData = new Uint8Array(attestation.authData);
+    // signCount is a 4-byte big-endian integer starting at offset 33 in authData
+    const signCount = (authData[33] << 24) | (authData[34] << 16) | (authData[35] << 8) | authData[36];
+
     // Send credential record to your API
     await fetch("http://localhost:4321/creds", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: credId,
-        publicKey: publicKey
+        publicKey: publicKey,
+        signCount: signCount
       })
     });
 

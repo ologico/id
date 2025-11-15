@@ -18,7 +18,7 @@ export async function POST({ request }) {
   const result = await db.insert(Cred).values({
     id: body.id,
     publicKey: body.publicKey || "...",
-    signCount: 0
+    signCount: body.signCount || 0
   });
 
   // Return response with 201 Created
