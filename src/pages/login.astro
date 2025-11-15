@@ -9,6 +9,10 @@ console.log(returnUrl);
   <button id="login-btn">Login</button>
   <div id="result"></div>
 
+  <script define:vars={{ returnUrl }}>
+    window.returnUrl = returnUrl;
+  </script>
+
   <script>
     import { login } from "../util/tools.ts";
 
@@ -22,11 +26,9 @@ console.log(returnUrl);
       // If login was successful, redirect to return URL
       if (result.includes("success") || result.includes("logged in")) {
         setTimeout(() => {
-          window.location.href = returnUrl;
+          window.location.href = window.returnUrl || "/";
         }, 1000);
       }
     });
   </script>
-
-  <script define:vars={{ returnUrl }}></script>
 </Layout>
