@@ -1,3 +1,5 @@
+import { decode } from 'cbor';
+
 export const authStorageKey = "webauthn:id";
 
 export async function register(
@@ -54,7 +56,6 @@ export async function register(
     const publicKey = btoa(String.fromCharCode(...new Uint8Array(credential.response.getPublicKey())));
 
     // Parse signCount from authenticator data using CBOR
-    import { decode } from 'cbor';
     const attestation = decode(new Uint8Array(credential.response.attestationObject));
     const authData = new Uint8Array(attestation.authData);
     // signCount is a 4-byte big-endian integer starting at offset 33 in authData
