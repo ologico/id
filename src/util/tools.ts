@@ -52,14 +52,20 @@ export async function register(
 
     localStorage.setItem(`${authStorageKey}`, credId);
 
-    // Extract and encode the public key
-    const publicKey = btoa(String.fromCharCode(...new Uint8Array(credential.response.getPublicKey())));
-
-    // Parse signCount from authenticator data using CBOR
-    const attestation = decode(new Uint8Array(credential.response.attestationObject));
+    // Extract and encode the public key from attestation object
+    const attestationResponse = credential.response as AuthenticatorAttestationResponse;
+    const attestation = decode(new Uint8Array(attestationResponse.attestationObject));
     const authData = new Uint8Array(attestation.authData);
-    // signCount is a 4-byte big-endian integer starting at offset 33 in authData
-    const signCount = (authData[33] << 24) | (authData[34] << 16) | (authData[35] << 8) | authData[36];
+    
+    // Extract public key from credential data (starts at offset 55 in authData)
+    // The credential data contains: AAGUID (16 bytes) + credentialIdLength (2 bytes) + credentialId + publicKey
+    const credentialIdLength = (authData[53] << 8) | authData[54];
+    const publicKeyStart = 55 + credentialIdLength;
+    const publicKeyBytes = authData.slice(publicKeyStart);
+    const publicKey = btoa(String.fromCharCode(...publicKeyBytes));
+
+    // signCount will be handled server-side during verification
+    const signCount = 0;
 
     // Send credential record to your API
     await fetch("http://localhost:4321/creds", {
@@ -112,27 +118,45 @@ export async function login(): Promise<string> {
   //
   // 4. Ask WebAuthn to sign the challenge
   //
-  const assertion = await navigator.credentials.get({
-    publicKey: {
-      challenge,
-      allowCredentials: [{ id: rawId, type: "public-key" }],
-      userVerification: "required"
+  try {
+    const assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ id: rawId, type: "public-key" }],
+        userVerification: "required"
+      }
+    });
+
+    if (!assertion) {
+      return "Authentication cancelled.";
     }
-  });
 
-  //
-  // 5. Send the signed challenge back to the server
-  //
-  const res = await fetch("/auth/finish-login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(assertion)
-  });
+    //
+    // 5. Send the signed challenge back to the server
+    //
+    const res = await fetch("/auth/finish-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        id: assertion.id,
+        rawId: btoa(String.fromCharCode(...new Uint8Array(assertion.rawId))),
+        response: {
+          authenticatorData: btoa(String.fromCharCode(...new Uint8Array(assertion.response.authenticatorData))),
+          clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(assertion.response.clientDataJSON))),
+          signature: btoa(String.fromCharCode(...new Uint8Array(assertion.response.signature)))
+        },
+        type: assertion.type
+      })
+    });
 
-  if (res.ok) {
-    return "Welcome back!";
+    if (res.ok) {
+      return "Welcome back!";
+    }
+
+    const errorText = await res.text();
+    return `Login failed: ${errorText}`;
+  } catch (error) {
+    return `Authentication error: ${error instanceof Error ? error.message : String(error)}`;
   }
-
-  return "Login failed.";
 }
