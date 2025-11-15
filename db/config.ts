@@ -18,6 +18,7 @@ const OAuthClient = defineTable({
     tokenUrl: column.text(),
     userInfoUrl: column.text(),
     scopes: column.text(),
+    redirectUri: column.text(),
     createdAt: column.date()
   }
 });
@@ -32,6 +33,9 @@ const OAuthConnection = defineTable({
     accessToken: column.text(),
     refreshToken: column.text({ optional: true }),
     linkedAt: column.date()
+  },
+  indexes: {
+    humanClientUnique: { on: ["humanId", "clientId"], unique: true }
   }
 });
 

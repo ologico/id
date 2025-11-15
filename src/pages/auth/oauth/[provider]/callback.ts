@@ -1,7 +1,7 @@
 export const prerender = false;
 
 import { db, OAuthClient, OAuthConnection } from "astro:db";
-import { eq } from "astro:db";
+import { eq, and } from "astro:db";
 
 export async function GET(context: any) {
   const { request, session, params } = context;
@@ -28,9 +28,7 @@ export async function GET(context: any) {
   }
 
   try {
-    // Exchange code for access token
-    const redirectUri = `${new URL(request.url).origin}/auth/oauth/${providerId}/callback`;
-    
+    // Exchange code for access token using stored redirect URI
     const tokenResponse = await fetch(client.tokenUrl, {
       method: "POST",
       headers: {
@@ -41,7 +39,7 @@ export async function GET(context: any) {
         client_id: client.clientId,
         client_secret: client.clientSecret,
         code: code,
-        redirect_uri: redirectUri,
+        redirect_uri: client.redirectUri,
       }),
     });
 
@@ -63,25 +61,39 @@ export async function GET(context: any) {
 
     // Store OAuth connection in database
     const connectionId = crypto.randomUUID();
-    await db.insert(OAuthConnection).values({
-      id: connectionId,
-      humanId: humanId,
-      clientId: providerId,
-      providerId: userData.id?.toString() || userData.login,
-      username: userData.login || userData.name,
-      accessToken: tokenData.access_token,
-      refreshToken: tokenData.refresh_token || null,
-      linkedAt: new Date(),
-    }).onConflictDoUpdate({
-      target: [OAuthConnection.humanId, OAuthConnection.clientId],
-      set: {
+    
+    // First try to find existing connection
+    const existingConnection = await db.select().from(OAuthConnection).where(
+      and(
+        eq(OAuthConnection.humanId, humanId),
+        eq(OAuthConnection.clientId, providerId)
+      )
+    ).get();
+
+    if (existingConnection) {
+      // Update existing connection
+      await db.update(OAuthConnection)
+        .set({
+          providerId: userData.id?.toString() || userData.login,
+          username: userData.login || userData.name,
+          accessToken: tokenData.access_token,
+          refreshToken: tokenData.refresh_token || null,
+          linkedAt: new Date(),
+        })
+        .where(eq(OAuthConnection.id, existingConnection.id));
+    } else {
+      // Insert new connection
+      await db.insert(OAuthConnection).values({
+        id: connectionId,
+        humanId: humanId,
+        clientId: providerId,
         providerId: userData.id?.toString() || userData.login,
         username: userData.login || userData.name,
         accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token || null,
         linkedAt: new Date(),
-      },
-    });
+      });
+    }
 
     // Clean up session
     await session.delete(`oauth-state-${providerId}`);
