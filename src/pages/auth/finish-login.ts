@@ -30,21 +30,13 @@ async function verifyAssertion(
 
     // Parse client data to verify challenge
     const clientData = JSON.parse(new TextDecoder().decode(clientDataJSON));
-    const receivedChallenge = new Uint8Array(
-      atob(clientData.challenge)
-        .split('')
-        .map(c => c.charCodeAt(0))
-    );
-    
-    // Verify challenge matches
-    const expectedChallenge = new Uint8Array(challenge);
-    if (receivedChallenge.length !== expectedChallenge.length) {
+    const receivedChallenge = Array.from(new Uint8Array(
+      atob(clientData.challenge).split('').map(c => c.charCodeAt(0))
+    ));
+
+    // Compare arrays directly
+    if (JSON.stringify(receivedChallenge) !== JSON.stringify(challenge)) {
       return false;
-    }
-    for (let i = 0; i < receivedChallenge.length; i++) {
-      if (receivedChallenge[i] !== expectedChallenge[i]) {
-        return false;
-      }
     }
 
     // Verify origin
