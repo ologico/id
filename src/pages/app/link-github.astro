@@ -49,9 +49,10 @@ const success = Astro.url.searchParams.get("success");
       )}
     </div>
   ) : (
-    <div>
-      <p>You are not logged in. Please <a href="/login">log in</a> first.</p>
-    </div>
+    <script>
+      // Redirect to login with return URL
+      window.location.href = '/login?return=' + encodeURIComponent(window.location.pathname);
+    </script>
   )}
 
   <div id="result"></div>

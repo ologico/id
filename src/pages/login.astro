@@ -1,12 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+const returnUrl = Astro.url.searchParams.get("return") || "/";
 ---
 
 <Layout>
   <button id="login-btn">Login</button>
   <div id="result"></div>
 
-  <script>
+  <script define:vars={{ returnUrl }}>
     import { login } from "../util/tools.ts";
 
     const button = document.getElementById("login-btn");
@@ -15,6 +17,13 @@ import Layout from "../layouts/Layout.astro";
     button.addEventListener("click", async () => {
       const result = await login(); // pass credId into login()
       resultDiv.textContent = result;
+      
+      // If login was successful, redirect to return URL
+      if (result.includes("success") || result.includes("logged in")) {
+        setTimeout(() => {
+          window.location.href = returnUrl;
+        }, 1000);
+      }
     });
   </script>
 </Layout>
