@@ -1,4 +1,4 @@
-import { decode } from 'cbor';
+import { decode } from 'cbor-js';
 
 export const authStorageKey = "webauthn:id";
 
