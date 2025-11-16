@@ -5,7 +5,6 @@
   "compatibility_flags": [
     "nodejs_compat",
     "global_fetch_strictly_public",
-    "fetch_refuses_unknown_protocols", // maybe?
     "disable_nodejs_process_v2"
   ],
   "observability": {
