@@ -1,9 +1,8 @@
 {
   "name": "id",
-  "pages_build_output_dir": "dist/",
+  "main": "./dist/_worker.js/index.js",
   "compatibility_date": "2025-11-15",
-  "compatibility_flags": ["nodejs_compat", "disable_nodejs_process_v2"],
-
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "observability": {
     "enabled": true
   },
@@ -16,8 +15,6 @@
   ],
 
   "vars": {
-    // Declared, but NO SECRETS IN FILE
-    "ASTRO_DB_REMOTE_URL": "",
-    "ASTRO_DB_APP_TOKEN": ""
+    "ASTRO_DB_REMOTE_URL": ""
   }
 }
