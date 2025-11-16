@@ -45,7 +45,7 @@ export default function Login() {
             : "/register"
         }
       >
-        Register
+        Need an account? Register
       </a>
     </div>
   );
