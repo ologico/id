@@ -37,16 +37,18 @@ export default function Login() {
     <div>
       <button onClick={handleClick}>Login</button>
       {result && <div id="result">{result}</div>}
-      <a
-        id="register-link"
-        href={
-          returnUrl
-            ? `/register?return=${encodeURIComponent(returnUrl)}`
-            : "/register"
-        }
-      >
-        Need an account? Register
-      </a>
+      <div>
+        <a
+          id="register-link"
+          href={
+            returnUrl
+              ? `/register?return=${encodeURIComponent(returnUrl)}`
+              : "/register"
+          }
+        >
+          Need an account? Register
+        </a>
+      </div>
     </div>
   );
 }
