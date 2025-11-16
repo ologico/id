@@ -23,9 +23,9 @@ export async function POST(context: APIContext) {
 
   // Convert challenge to base64url for client
   const challengeBase64url = btoa(String.fromCharCode(...challenge))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=/g, "");
 
   return new Response(JSON.stringify({ challenge: challengeBase64url }), {
     headers: { "Content-Type": "application/json" }

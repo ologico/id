@@ -5,7 +5,7 @@ import { eq, and } from "astro:db";
 
 export async function POST(context: any) {
   const { session, params } = context;
-  
+
   const humanId = await session.get("humanId");
   if (!humanId) {
     return new Response("Not logged in", { status: 401 });
@@ -14,12 +14,14 @@ export async function POST(context: any) {
   const providerId = params.provider;
 
   try {
-    await db.delete(OAuthConnection).where(
-      and(
-        eq(OAuthConnection.humanId, humanId),
-        eq(OAuthConnection.clientId, providerId)
-      )
-    );
+    await db
+      .delete(OAuthConnection)
+      .where(
+        and(
+          eq(OAuthConnection.humanId, humanId),
+          eq(OAuthConnection.clientId, providerId)
+        )
+      );
     return new Response("OAuth account unlinked successfully");
   } catch (error) {
     console.error("Error unlinking OAuth account:", error);

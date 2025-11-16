@@ -7,7 +7,7 @@ import Layout from "../layouts/Layout.astro";
   <button id="register-btn">Register</button>
 
   <div id="result"></div>
-  
+
   <p>Already have an account? <a href="/login">Login here</a></p>
 
   <script>
@@ -16,7 +16,6 @@ import Layout from "../layouts/Layout.astro";
     const button = document.getElementById("register-btn");
     const resultDiv = document.getElementById("result");
     console.log("hell");
-
 
     button.addEventListener("click", async () => {
       const result = await register();
