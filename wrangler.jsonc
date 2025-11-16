@@ -4,16 +4,19 @@
   "compatibility_date": "2025-11-15",
   "compatibility_flags": [
     "nodejs_compat",
-    "global_fetch_strictly_public",
     "disable_nodejs_process_v2"
   ],
+  // for pages
+  "pages_build_output_dir": "/dist",
   "observability": {
     "enabled": true
   },
+  /* for workers
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist"
   },
+  */
   "kv_namespaces": [
     {
       "binding": "SESSION",
@@ -21,7 +24,6 @@
     }
   ],
   "vars": {
-    "ASTRO_DB_REMOTE_URL": "libsql://id-h-infinite-logic.aws-us-west-2.turso.io"
   },
   "routes": [
     {
