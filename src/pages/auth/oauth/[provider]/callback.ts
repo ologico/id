@@ -52,9 +52,12 @@ export async function GET(context: any) {
     const tokenData = await tokenResponse.json();
 
     if (tokenData.error) {
-      return new Response(`OAuth error: ${tokenData.error_description}`, {
-        status: 400
-      });
+      return new Response(
+        `Token data OAuth error: ${tokenData.error_description}`,
+        {
+          status: 400
+        }
+      );
     }
 
     // Get user info from provider
@@ -97,6 +100,7 @@ export async function GET(context: any) {
         .where(eq(OAuthConnection.id, existingConnection.id));
     } else {
       // Insert new connection
+      console.log("inserting");
       await db.insert(OAuthConnection).values({
         id: connectionId,
         humanId: humanId,
@@ -108,6 +112,7 @@ export async function GET(context: any) {
         linkedAt: new Date()
       });
     }
+    console.log("insert done");
 
     // Clean up session
     await session.delete(`oauth-state-${providerId}`);

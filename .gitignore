@@ -27,3 +27,5 @@ pnpm-debug.log*
 .go-tetris.log
 .wrangler
 .aider*
+
+wrangler.jsonc
