@@ -124,7 +124,7 @@ export async function GET(context: any) {
     );
     return context.redirect(redirectUrl.toString());
   } catch (error) {
-    console.error("OAuth error:", error);
+    console.error("other OAuth error:", error);
     return new Response("Failed to link OAuth account", { status: 500 });
   }
 }
