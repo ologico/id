@@ -16,8 +16,13 @@
       "id": "c872b9fb04ac4f64b2e52e36dcc1564d"
     }
   ],
-
   "vars": {
     "ASTRO_DB_REMOTE_URL": ""
-  }
+  },
+  "routes": [
+    {
+      "pattern": "id.svc.h.infinitelogic.net",
+      "custom_domain": true
+    }
+  ]
 }
