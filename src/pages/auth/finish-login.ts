@@ -57,7 +57,8 @@ function derToP1363(derSignature: Uint8Array): Uint8Array {
 async function verifyAssertion(
   assertion: any,
   storedPublicKey: string,
-  challenge: number[]
+  challenge: number[],
+  context: APIContext
 ): Promise<boolean> {
   try {
     // Decode the assertion components using base64url decoder
@@ -166,7 +167,8 @@ export async function POST(context: APIContext) {
   const valid = await verifyAssertion(
     assertion,
     cred.publicKey,
-    storedChallenge
+    storedChallenge,
+    context
   );
 
   if (!valid) {
