@@ -77,8 +77,18 @@ export async function GET(context: any) {
       }
     });
 
-    const userData = await userResponse.json();
-    console.log(userData);
+    const userResponseText = await userResponse.text();
+    console.log('User response status:', userResponse.status);
+    console.log('User response text:', userResponseText);
+
+    let userData;
+    try {
+      userData = JSON.parse(userResponseText);
+    } catch (e) {
+      return new Response(`Invalid JSON response from user info: ${userResponseText}`, { status: 500 });
+    }
+
+    console.log('Parsed user data:', userData);
 
     // Store OAuth connection in database
     const connectionId = crypto.randomUUID();
