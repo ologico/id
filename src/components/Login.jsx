@@ -23,7 +23,11 @@ export default function Login() {
       // Only redirect if login was actually successful
       if (loginResult === "Login successful!" && returnUrl) {
         window.location.href = returnUrl;
-      } else if (loginResult.includes("error") || loginResult.includes("failed") || loginResult.includes("Error")) {
+      } else if (
+        loginResult.includes("error") ||
+        loginResult.includes("failed") ||
+        loginResult.includes("Error")
+      ) {
         // Don't redirect on errors, just show the error message
         console.error("Login failed:", loginResult);
       }
@@ -38,6 +42,7 @@ export default function Login() {
       <button onClick={handleClick}>Login</button>
       {result && <div id="result">{result}</div>}
       <div>
+        Need an account?{" "}
         <a
           id="register-link"
           href={
@@ -46,7 +51,7 @@ export default function Login() {
               : "/register"
           }
         >
-          Need an account? Register
+          Register
         </a>
       </div>
     </div>
