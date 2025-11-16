@@ -7,7 +7,11 @@ import Layout from "../layouts/Layout.astro";
   <button id="login-btn">Login</button>
   <div id="result"></div>
 
-  <p>Don't have an account? <a id="register-link" href="/register">Register here</a></p>
+  <p>
+    Don't have an account? <a id="register-link" href="/register"
+      >Register here</a
+    >
+  </p>
 
   <script>
     import { login } from "../util/tools.ts";
@@ -18,7 +22,7 @@ import Layout from "../layouts/Layout.astro";
 
     // Pass return parameter to register page
     const urlParams = new URLSearchParams(window.location.search);
-    const returnUrl = urlParams.get('return');
+    const returnUrl = urlParams.get("return");
     if (returnUrl) {
       registerLink.href = `/register?return=${encodeURIComponent(returnUrl)}`;
     }
@@ -26,7 +30,7 @@ import Layout from "../layouts/Layout.astro";
     button.addEventListener("click", async () => {
       const result = await login(); // pass credId into login()
       resultDiv.textContent = result;
-      
+
       // If login successful and we have a return URL, redirect
       if (result === "Login successful!" && returnUrl) {
         window.location.href = returnUrl;
