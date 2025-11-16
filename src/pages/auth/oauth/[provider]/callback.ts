@@ -73,7 +73,8 @@ export async function GET(context: any) {
     const userResponse = await fetch(client.userInfoUrl, {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
-        Accept: "application/json"
+        Accept: "application/json",
+        "User-Agent": "OAuth-App/1.0"
       }
     });
 
