@@ -1,22 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
-// Load .md + .astro pages
-const allPages = await Astro.glob("./*.{md,astro}");
-
-function fallbackTitle(file) {
-  // file might be "./login.astro" or "login.md"
-  const base = file.split("/").pop(); // get "login.astro"
-  const name = base.replace(/\.(md|astro)$/, ""); // get "login"
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
-const pages = allPages
-  .filter((p) => !p.url.endsWith("index")) // hide index
-  .map((p) => ({
-    url: p.url, // always a clean path like "/login"
-    title: p.frontmatter?.title || p.title || fallbackTitle(p.file)
-  }));
 ---
 
 <Layout>
@@ -27,12 +10,11 @@ const pages = allPages
   <h2>Pages</h2>
 
   <ul>
-    {
-      pages.map((page) => (
         <li>
-          <a href={page.url}>{page.title}</a>
+		<a href="/about/">About</a>
         </li>
-      ))
-    }
+        <li>
+		<a href="/app/link-oauth">Your Profile</a>
+        </li>
   </ul>
 </Layout>

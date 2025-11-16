@@ -35,7 +35,6 @@
       // Handle logout button click
       document.getElementById('logout-btn')?.addEventListener('click', async () => {
         const result = await logout();
-        alert(result);
         if (result.includes('successfully')) {
           window.location.href = '/';
         }

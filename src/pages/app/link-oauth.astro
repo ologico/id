@@ -61,7 +61,6 @@ const success = Astro.url.searchParams.get("success");
         ) : oauthConnection ? (
           <div>
             <h2>{oauthClient.name} Account Linked</h2>
-            <p>✅ Your {oauthClient.name} account is already linked:</p>
             <ul>
               <li>
                 <strong>Username:</strong> {oauthConnection.username}
