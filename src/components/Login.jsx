@@ -26,7 +26,7 @@ export default function Login() {
 
   return (
     <div>
-      <button onClick={handleClick}>Login foo</button>
+      <button onClick={handleClick}>Login</button>
       {result && <div id="result">{result}</div>}
       <a 
         id="register-link" 

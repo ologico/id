@@ -30,8 +30,7 @@ export default function Register() {
 
   return (
     <div>
-      <h1>Register</h1>
-      <button onClick={handleClick}>Register</button>
+      <button onClick={handleClick}>Register foo</button>
       {result && <div id="result">{result}</div>}
       <p>
         Already have an account?{" "}
