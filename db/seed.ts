@@ -16,19 +16,17 @@ export default async function () {
     }
   ]);
 
-  await db
-    .insert(OAuthClient)
-    .values([
-      {
-        id: "github",
-        name: "GitHub",
-        clientId: "Ov23li0TREKvMaA1Lfnp",
-        clientSecret: "63a54211d38c5b9c5a0fea11e775383d091ffd71",
-        authUrl: "https://github.com/login/oauth/authorize",
-        tokenUrl: "https://github.com/login/oauth/access_token",
-        userInfoUrl: "https://api.github.com/user",
-        scopes: "user:email",
-        createdAt: new Date("2025-11-15T23:57:35.000Z")
-      }
-    ]);
+  await db.insert(OAuthClient).values([
+    {
+      id: "github",
+      name: "GitHub",
+      clientId: "Ov23li0TREKvMaA1Lfnp",
+      clientSecret: "63a54211d38c5b9c5a0fea11e775383d091ffd71",
+      authUrl: "https://github.com/login/oauth/authorize",
+      tokenUrl: "https://github.com/login/oauth/access_token",
+      userInfoUrl: "https://api.github.com/user",
+      scopes: "user:email",
+      createdAt: new Date("2025-11-15T23:57:35.000Z")
+    }
+  ]);
 }
