@@ -8,18 +8,34 @@ import Layout from "../layouts/Layout.astro";
 
   <div id="result"></div>
 
-  <p>Already have an account? <a href="/login">Login here</a></p>
+  <p>Already have an account? <a id="login-link" href="/login">Login here</a></p>
 
   <script>
     import { register } from "../util/tools.ts";
 
     const button = document.getElementById("register-btn");
     const resultDiv = document.getElementById("result");
-    console.log("hell");
+    const loginLink = document.getElementById("login-link");
+
+    // Get return parameter and pass it to login page
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get('return');
+    if (returnUrl) {
+      loginLink.href = `/login?return=${encodeURIComponent(returnUrl)}`;
+    }
 
     button.addEventListener("click", async () => {
       const result = await register();
       resultDiv.textContent = result;
+      
+      // If registration successful, redirect to login with return parameter
+      if (result === "Registration successful!") {
+        if (returnUrl) {
+          window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
+        } else {
+          window.location.href = "/login";
+        }
+      }
     });
   </script>
 </Layout>
