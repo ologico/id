@@ -1,43 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Register from "../components/Register.jsx";
 ---
 
 <Layout>
-  <h1>Register</h1>
-  <button id="register-btn">Register</button>
-
-  <div id="result"></div>
-
-  <p>
-    Already have an account? <a id="login-link" href="/login">Login here</a>
-  </p>
-
-  <script client:load>
-    import { register } from "../util/tools.ts";
-
-    const button = document.getElementById("register-btn");
-    const resultDiv = document.getElementById("result");
-    const loginLink = document.getElementById("login-link");
-
-    // Get return parameter and pass it to login page
-    const urlParams = new URLSearchParams(window.location.search);
-    const returnUrl = urlParams.get("return");
-    if (returnUrl) {
-      loginLink.href = `/login?return=${encodeURIComponent(returnUrl)}`;
-    }
-
-    button.addEventListener("click", async () => {
-      const result = await register();
-      resultDiv.textContent = result;
-
-      // If registration successful, redirect to login with return parameter
-      if (result === "Welcome, Human") {
-        if (returnUrl) {
-          window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
-        } else {
-          window.location.href = "/login";
-        }
-      }
-    });
-  </script>
+  <Register client:load />
 </Layout>
