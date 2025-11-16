@@ -118,6 +118,28 @@ export async function register(
 }
 
 //
+// Logout
+//
+export async function logout(): Promise<string> {
+  try {
+    const res = await fetch("/auth/logout", {
+      method: "GET",
+      credentials: "include" // important for session cookie
+    });
+
+    if (res.ok) {
+      // Clear stored credential ID from localStorage
+      localStorage.removeItem(authStorageKey);
+      return "Logged out successfully!";
+    }
+
+    return "Logout failed";
+  } catch (error) {
+    return `Logout error: ${error instanceof Error ? error.message : String(error)}`;
+  }
+}
+
+//
 // Login
 //
 export async function login(): Promise<string> {
