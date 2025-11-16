@@ -1,4 +1,4 @@
-export const prerender = true;
+export const prerender = false;
 
 import { db, eq, Cred } from "astro:db";
 
@@ -10,20 +10,4 @@ export async function GET({ params }) {
   return new Response(JSON.stringify(result[0]), {
     headers: { "Content-Type": "application/json" }
   });
-}
-
-export async function getStaticPaths() {
-  const creds = await db.select().from(Cred).all();
-  const res = creds.map((c) => ({
-    params: {
-      id: encodeURIComponent(c.id)
-    }
-  }));
-  console.log(res);
-
-  return creds.map((c) => ({
-    params: {
-      id: encodeURIComponent(c.id)
-    }
-  }));
 }
