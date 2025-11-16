@@ -101,7 +101,7 @@ export async function register(
     const signCount = 0;
 
     // Send credential record to your API
-    await fetch("/creds", {
+    await fetch("/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
