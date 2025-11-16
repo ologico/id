@@ -8,7 +8,6 @@ import react from "@astrojs/react";
 
 export default defineConfig({
   site: "https://id.svc.h.infinitelogic.net",
-  output: "server",
   adapter: cloudflare(),
   prefetch: {
     defaultStrategy: "viewport",
