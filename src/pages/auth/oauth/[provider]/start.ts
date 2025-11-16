@@ -36,5 +36,5 @@ export async function GET(context: any) {
   authUrl.searchParams.set("scope", client.scopes);
   authUrl.searchParams.set("state", state);
 
-  return Response.redirect(authUrl.toString());
+  return context.redirect(authUrl.toString());
 }
