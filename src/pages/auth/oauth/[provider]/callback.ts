@@ -66,6 +66,7 @@ export async function GET(context: any) {
     });
 
     const userData = await userResponse.json();
+    console.log(userData);
 
     // Store OAuth connection in database
     const connectionId = crypto.randomUUID();
@@ -116,7 +117,7 @@ export async function GET(context: any) {
       `/app/link-oauth?provider=${providerId}&success=true`,
       new URL(request.url).origin
     );
-    return Response.redirect(redirectUrl.toString());
+    return context.redirect(redirectUrl.toString());
   } catch (error) {
     console.error("OAuth error:", error);
     return new Response("Failed to link OAuth account", { status: 500 });
