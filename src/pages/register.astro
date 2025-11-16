@@ -29,7 +29,7 @@ import Layout from "../layouts/Layout.astro";
       resultDiv.textContent = result;
       
       // If registration successful, redirect to login with return parameter
-      if (result === "Registration successful!") {
+      if (result === "Welcome, Human") {
         if (returnUrl) {
           window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
         } else {
