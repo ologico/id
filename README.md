@@ -7,7 +7,6 @@ This project implements a minimal identity service that binds a WebAuthn credent
 Clone the repo, copy the example environment file, install dependencies, and start the dev server:
 
 ```bash
-cp .env.example .env
 npm install
 npm run dev
 ```
