@@ -23,10 +23,12 @@
     }
   ],
   "vars": {},
+  /* worker thing
   "routes": [
     {
       "pattern": "id.svc.h.infinitelogic.net",
       "custom_domain": true
     }
+    */
   ]
 }
