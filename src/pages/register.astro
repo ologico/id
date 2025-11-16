@@ -12,7 +12,7 @@ import Layout from "../layouts/Layout.astro";
     Already have an account? <a id="login-link" href="/login">Login here</a>
   </p>
 
-  <script>
+  <script client:load>
     import { register } from "../util/tools.ts";
 
     const button = document.getElementById("register-btn");
