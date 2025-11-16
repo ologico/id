@@ -39,14 +39,14 @@ export async function GET(context: any) {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         client_id: client.clientId,
         client_secret: client.clientSecret,
         code: code,
         redirect_uri: redirectUri
-      })
+      }).toString()
     });
 
     const tokenData = await tokenResponse.json();
