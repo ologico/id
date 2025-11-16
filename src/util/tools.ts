@@ -138,6 +138,27 @@ export async function logout(): Promise<string> {
 }
 
 //
+// Whoami
+//
+export async function whoami(): Promise<string> {
+  try {
+    const res = await fetch("/auth/whoami", {
+      method: "GET",
+      credentials: "include" // important for session cookie
+    });
+
+    if (res.ok) {
+      const humanId = await res.text();
+      return humanId || "Not logged in";
+    }
+
+    return "Failed to get user info";
+  } catch (error) {
+    return `Whoami error: ${error instanceof Error ? error.message : String(error)}`;
+  }
+}
+
+//
 // Login
 //
 export async function login(): Promise<string> {
