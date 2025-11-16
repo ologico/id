@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Login from "../components/Login.jsx";
 ---
 
 <Layout>
@@ -12,29 +13,5 @@ import Layout from "../layouts/Layout.astro";
       >Register here</a
     >
   </p>
-
-  <script client:load>
-    import { login } from "../util/tools.ts";
-
-    const button = document.getElementById("login-btn");
-    const resultDiv = document.getElementById("result");
-    const registerLink = document.getElementById("register-link");
-
-    // Pass return parameter to register page
-    const urlParams = new URLSearchParams(window.location.search);
-    const returnUrl = urlParams.get("return");
-    if (returnUrl) {
-      registerLink.href = `/register?return=${encodeURIComponent(returnUrl)}`;
-    }
-
-    button.addEventListener("click", async () => {
-      const result = await login(); // pass credId into login()
-      resultDiv.textContent = result;
-
-      // If login successful and we have a return URL, redirect
-      if (result === "Login successful!" && returnUrl) {
-        window.location.href = returnUrl;
-      }
-    });
-  </script>
+	    <Login client:load />
 </Layout>
