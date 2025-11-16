@@ -50,14 +50,16 @@ export async function GET(context: any) {
     });
 
     const responseText = await tokenResponse.text();
-    console.log('Token response status:', tokenResponse.status);
-    console.log('Token response text:', responseText);
+
+    if (!tokenResponse.ok) {
+      return new Response(`Token request failed: ${tokenResponse.status} ${responseText}`, { status: 500 });
+    }
 
     let tokenData;
     try {
       tokenData = JSON.parse(responseText);
     } catch (e) {
-      return new Response(`Invalid JSON response: ${responseText}`, { status: 500 });
+      return new Response(`Token endpoint returned invalid JSON: ${responseText}`, { status: 500 });
     }
 
     if (tokenData.error) {
@@ -79,17 +81,17 @@ export async function GET(context: any) {
     });
 
     const userResponseText = await userResponse.text();
-    console.log('User response status:', userResponse.status);
-    console.log('User response text:', userResponseText);
+
+    if (!userResponse.ok) {
+      return new Response(`User info request failed: ${userResponse.status} ${userResponseText}`, { status: 500 });
+    }
 
     let userData;
     try {
       userData = JSON.parse(userResponseText);
     } catch (e) {
-      return new Response(`Invalid JSON response from user info: ${userResponseText}`, { status: 500 });
+      return new Response(`User info endpoint returned invalid JSON: ${userResponseText}`, { status: 500 });
     }
-
-    console.log('Parsed user data:', userData);
 
     // Store OAuth connection in database
     const connectionId = crypto.randomUUID();
@@ -120,7 +122,6 @@ export async function GET(context: any) {
         .where(eq(OAuthConnection.id, existingConnection.id));
     } else {
       // Insert new connection
-      console.log("inserting");
       await db.insert(OAuthConnection).values({
         id: connectionId,
         humanId: humanId,
@@ -132,7 +133,6 @@ export async function GET(context: any) {
         linkedAt: new Date()
       });
     }
-    console.log("insert done");
 
     // Clean up session
     await session.delete(`oauth-state-${providerId}`);
