@@ -81,10 +81,11 @@ async function verifyAssertion(
     }
 
     // Verify origin
-    const expectedOrigins = ["http://localhost:4321", "https://localhost:4321"];
+    const origin = new URL(context.request.url).origin;
 
-    if (!expectedOrigins.includes(clientData.origin)) {
-      return false;
+    // Example use
+    if (assertion.origin !== origin) {
+      return new Response("Origin mismatch", { status: 400 });
     }
 
     // Create the data that was signed
