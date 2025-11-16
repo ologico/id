@@ -13,5 +13,5 @@ export default defineConfig({
     defaultStrategy: "viewport",
     prefetchAll: true
   },
-  integrations: [sitemap({}), pagefind(), db(), react()]
+  integrations: [sitemap({}), pagefind(), db({ mode: "web" }), react()]
 });

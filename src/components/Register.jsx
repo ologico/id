@@ -27,7 +27,11 @@ export default function Register() {
         } else {
           window.location.href = "/login";
         }
-      } else if (registerResult.includes("error") || registerResult.includes("failed") || registerResult.includes("Error")) {
+      } else if (
+        registerResult.includes("error") ||
+        registerResult.includes("failed") ||
+        registerResult.includes("Error")
+      ) {
         // Don't redirect on errors, just show the error message
         console.error("Registration failed:", registerResult);
       }

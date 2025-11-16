@@ -11,7 +11,7 @@ export default function Logout() {
     try {
       const { whoami } = await import("../util/tools.js");
       const humanId = await whoami();
-      
+
       if (
         humanId &&
         humanId !== "Not logged in" &&
