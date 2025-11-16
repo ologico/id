@@ -41,7 +41,7 @@ export default function Login() {
     <div>
       <button onClick={handleClick}>Login</button>
       {result && <div id="result">{result}</div>}
-      <div>
+      <p>
         Need an account?{" "}
         <a
           id="register-link"
@@ -53,7 +53,7 @@ export default function Login() {
         >
           Register
         </a>
-      </div>
+      </p>
     </div>
   );
 }
