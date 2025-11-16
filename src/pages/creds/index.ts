@@ -3,6 +3,8 @@ export const prerender = false;
 import { db, eq, Cred } from "astro:db";
 
 export async function POST({ request }) {
+  console.log("REMOTE_URL:", env.ASTRO_DB_REMOTE_URL);
+  console.log("APP_TOKEN:", env.ASTRO_DB_APP_TOKEN ? "yes" : "no");
   // Parse JSON body
   const body = await request.json();
 

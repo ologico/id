@@ -34,9 +34,13 @@ export default function Register() {
       {result && <div id="result">{result}</div>}
       <p>
         Already have an account?{" "}
-        <a 
-          id="login-link" 
-          href={returnUrl ? `/login?return=${encodeURIComponent(returnUrl)}` : "/login"}
+        <a
+          id="login-link"
+          href={
+            returnUrl
+              ? `/login?return=${encodeURIComponent(returnUrl)}`
+              : "/login"
+          }
         >
           Login here
         </a>

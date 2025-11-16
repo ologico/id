@@ -10,7 +10,7 @@ export default function Logout() {
   async function checkLoginStatus() {
     const { whoami } = await import("../util/tools.js");
     const humanId = await whoami();
-    
+
     if (
       humanId &&
       humanId !== "Not logged in" &&
