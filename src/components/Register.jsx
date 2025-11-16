@@ -14,17 +14,26 @@ export default function Register() {
   }, []);
 
   async function handleClick() {
-    const { register } = await import("../util/tools.js");
-    const registerResult = await register();
-    setResult(registerResult);
+    try {
+      setResult("Registering...");
+      const { register } = await import("../util/tools.js");
+      const registerResult = await register();
+      setResult(registerResult);
 
-    // If registration successful, redirect to login with return parameter
-    if (registerResult === "Welcome, Human") {
-      if (returnUrl) {
-        window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
-      } else {
-        window.location.href = "/login";
+      // Only redirect if registration was actually successful
+      if (registerResult === "Welcome, Human") {
+        if (returnUrl) {
+          window.location.href = `/login?return=${encodeURIComponent(returnUrl)}`;
+        } else {
+          window.location.href = "/login";
+        }
+      } else if (registerResult.includes("error") || registerResult.includes("failed") || registerResult.includes("Error")) {
+        // Don't redirect on errors, just show the error message
+        console.error("Registration failed:", registerResult);
       }
+    } catch (error) {
+      console.error("Registration error:", error);
+      setResult(`Registration failed: ${error.message}`);
     }
   }
 

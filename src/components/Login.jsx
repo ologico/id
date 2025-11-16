@@ -14,13 +14,22 @@ export default function Login() {
   }, []);
 
   async function handleClick() {
-    const { login } = await import("../util/tools.js");
-    const loginResult = await login();
-    setResult(loginResult);
+    try {
+      setResult("Logging in...");
+      const { login } = await import("../util/tools.js");
+      const loginResult = await login();
+      setResult(loginResult);
 
-    // If login successful and we have a return URL, redirect
-    if (loginResult === "Login successful!" && returnUrl) {
-      window.location.href = returnUrl;
+      // Only redirect if login was actually successful
+      if (loginResult === "Login successful!" && returnUrl) {
+        window.location.href = returnUrl;
+      } else if (loginResult.includes("error") || loginResult.includes("failed") || loginResult.includes("Error")) {
+        // Don't redirect on errors, just show the error message
+        console.error("Login failed:", loginResult);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setResult(`Login failed: ${error.message}`);
     }
   }
 
