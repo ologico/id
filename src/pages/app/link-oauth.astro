@@ -1,0 +1,148 @@
+---
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import { db, OAuthClient, OAuthConnection } from "astro:db";
+import { eq, and } from "astro:db";
+
+const humanId = await Astro.session.get("humanId");
+const providerId = Astro.url.searchParams.get("provider") || "github";
+
+let oauthClient = null;
+let oauthConnection = null;
+
+if (humanId) {
+  // Get OAuth client info
+  const clientResult = await db
+    .select()
+    .from(OAuthClient)
+    .where(eq(OAuthClient.id, providerId))
+    .get();
+  oauthClient = clientResult;
+
+  // Get existing connection
+  if (oauthClient) {
+    const connectionResult = await db
+      .select()
+      .from(OAuthConnection)
+      .where(
+        and(
+          eq(OAuthConnection.humanId, humanId),
+          eq(OAuthConnection.clientId, providerId)
+        )
+      )
+      .get();
+    oauthConnection = connectionResult;
+  }
+}
+
+const success = Astro.url.searchParams.get("success");
+---
+
+<Layout>
+  {
+    humanId ? (
+      <div>
+        <p>
+          Logged in as: <strong>{humanId}</strong>
+        </p>
+
+        {success && (
+          <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 10px; margin: 10px 0; border-radius: 4px;">
+            ✅ {oauthClient?.name || providerId} account linked successfully!
+          </div>
+        )}
+
+        {!oauthClient ? (
+          <div>
+            <h2>OAuth Provider Not Found</h2>
+            <p>The OAuth provider "{providerId}" is not configured.</p>
+          </div>
+        ) : oauthConnection ? (
+          <div>
+            <h2>{oauthClient.name} Account Linked</h2>
+            <p>✅ Your {oauthClient.name} account is already linked:</p>
+            <ul>
+              <li>
+                <strong>Username:</strong> {oauthConnection.username}
+              </li>
+              <li>
+                <strong>Provider ID:</strong> {oauthConnection.providerId}
+              </li>
+              <li>
+                <strong>Linked:</strong>{" "}
+                {oauthConnection.linkedAt.toLocaleDateString()}
+              </li>
+            </ul>
+            <button id="unlink-btn" data-provider={providerId}>
+              Unlink {oauthClient.name} Account
+            </button>
+          </div>
+        ) : (
+          <div>
+            <h2>Link {oauthClient.name} Account</h2>
+            <p>
+              Would you like to link your {oauthClient.name} account to enable
+              additional features?
+            </p>
+
+            <button id="link-oauth-btn" data-provider={providerId}>
+              Link {oauthClient.name}
+            </button>
+            <button id="skip-btn">Skip for now</button>
+          </div>
+        )}
+      </div>
+    ) : (
+      <div>
+        <script client:load>
+          // Only redirect if we're actually in the "not logged in" section
+          window.location.href = '/login?return=' +
+          encodeURIComponent(window.location.pathname);
+        </script>
+      </div>
+    )
+  }
+
+  <div id="result"></div>
+
+  <script>
+    document
+      .getElementById("link-oauth-btn")
+      ?.addEventListener("click", (e) => {
+        const provider = e.target.dataset.provider;
+        window.location.href = `/auth/oauth/${provider}/start`;
+      });
+
+    document.getElementById("skip-btn")?.addEventListener("click", () => {
+      document.getElementById("result").innerHTML =
+        "<p>OAuth linking skipped. You can link your account later.</p>";
+    });
+
+    document
+      .getElementById("unlink-btn")
+      ?.addEventListener("click", async (e) => {
+        const provider = e.target.dataset.provider;
+        if (
+          confirm(`Are you sure you want to unlink your ${provider} account?`)
+        ) {
+          try {
+            const response = await fetch(`/auth/oauth/${provider}/unlink`, {
+              method: "POST",
+              credentials: "include"
+            });
+
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              document.getElementById("result").innerHTML =
+                '<p style="color: red;">Failed to unlink OAuth account.</p>';
+            }
+          } catch (error) {
+            document.getElementById("result").innerHTML =
+              '<p style="color: red;">Error unlinking OAuth account.</p>';
+          }
+        }
+      });
+  </script>
+</Layout>

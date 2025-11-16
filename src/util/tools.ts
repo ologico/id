@@ -1,4 +1,4 @@
-import { decode } from 'cbor-js';
+import { decode } from "cbor-js";
 
 export const authStorageKey = "webauthn:id";
 
@@ -53,29 +53,48 @@ export async function register(
     localStorage.setItem(`${authStorageKey}`, credId);
 
     // Extract and encode the public key from attestation object
-    const attestationResponse = credential.response as AuthenticatorAttestationResponse;
-    const attestationBuffer = new Uint8Array(attestationResponse.attestationObject);
-    const attestation = decode(attestationBuffer.buffer.slice(attestationBuffer.byteOffset, attestationBuffer.byteOffset + attestationBuffer.byteLength));
+    const attestationResponse =
+      credential.response as AuthenticatorAttestationResponse;
+    const attestationBuffer = new Uint8Array(
+      attestationResponse.attestationObject
+    );
+    const attestation = decode(
+      attestationBuffer.buffer.slice(
+        attestationBuffer.byteOffset,
+        attestationBuffer.byteOffset + attestationBuffer.byteLength
+      )
+    );
     const authData = new Uint8Array(attestation.authData);
-    
+
     // Extract public key from credential data (starts at offset 55 in authData)
     // The credential data contains: AAGUID (16 bytes) + credentialIdLength (2 bytes) + credentialId + publicKey
     const credentialIdLength = (authData[53] << 8) | authData[54];
     const publicKeyStart = 55 + credentialIdLength;
     const publicKeyBytes = authData.slice(publicKeyStart);
-    
+
     // Parse the CBOR-encoded public key
-    const publicKeyObject = decode(publicKeyBytes.buffer.slice(publicKeyBytes.byteOffset, publicKeyBytes.byteOffset + publicKeyBytes.byteLength));
-    
+    const publicKeyObject = decode(
+      publicKeyBytes.buffer.slice(
+        publicKeyBytes.byteOffset,
+        publicKeyBytes.byteOffset + publicKeyBytes.byteLength
+      )
+    );
+
     // Extract the x and y coordinates for P-256 (assuming ES256 algorithm)
     // CBOR key format: 1: key type, 3: algorithm, -1: curve, -2: x coordinate, -3: y coordinate
     const x = new Uint8Array(publicKeyObject[-2]);
     const y = new Uint8Array(publicKeyObject[-3]);
-    
+
     // Store the coordinates as base64url for later reconstruction
     const publicKey = JSON.stringify({
-      x: btoa(String.fromCharCode(...x)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
-      y: btoa(String.fromCharCode(...y)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+      x: btoa(String.fromCharCode(...x))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, ""),
+      y: btoa(String.fromCharCode(...y))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "")
     });
 
     // signCount will be handled server-side during verification
@@ -120,12 +139,13 @@ export async function login(): Promise<string> {
   }).then((r) => r.json());
 
   // Convert base64url challenge back to Uint8Array
-  const challengeBase64 = start.challenge.replace(/-/g, '+').replace(/_/g, '/');
-  const paddedChallenge = challengeBase64 + '='.repeat((4 - challengeBase64.length % 4) % 4);
+  const challengeBase64 = start.challenge.replace(/-/g, "+").replace(/_/g, "/");
+  const paddedChallenge =
+    challengeBase64 + "=".repeat((4 - (challengeBase64.length % 4)) % 4);
   const challenge = new Uint8Array(
     atob(paddedChallenge)
-      .split('')
-      .map(c => c.charCodeAt(0))
+      .split("")
+      .map((c) => c.charCodeAt(0))
   );
 
   //
@@ -163,9 +183,19 @@ export async function login(): Promise<string> {
         id: assertion.id,
         rawId: btoa(String.fromCharCode(...new Uint8Array(assertion.rawId))),
         response: {
-          authenticatorData: btoa(String.fromCharCode(...new Uint8Array(assertion.response.authenticatorData))),
-          clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(assertion.response.clientDataJSON))),
-          signature: btoa(String.fromCharCode(...new Uint8Array(assertion.response.signature)))
+          authenticatorData: btoa(
+            String.fromCharCode(
+              ...new Uint8Array(assertion.response.authenticatorData)
+            )
+          ),
+          clientDataJSON: btoa(
+            String.fromCharCode(
+              ...new Uint8Array(assertion.response.clientDataJSON)
+            )
+          ),
+          signature: btoa(
+            String.fromCharCode(...new Uint8Array(assertion.response.signature))
+          )
         },
         type: assertion.type
       })
@@ -174,15 +204,15 @@ export async function login(): Promise<string> {
     if (res.ok) {
       // Check for return URL parameter and redirect
       const urlParams = new URLSearchParams(window.location.search);
-      const returnUrl = urlParams.get('return');
-      
+      const returnUrl = urlParams.get("return");
+
       if (returnUrl) {
         setTimeout(() => {
           window.location.href = returnUrl;
         }, 1000);
         return "Welcome back! Redirecting...";
       }
-      
+
       return "Welcome back!";
     }
 

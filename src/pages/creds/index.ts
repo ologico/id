@@ -8,24 +8,24 @@ export async function POST({ request }) {
 
   // Validate required fields
   if (!body.id) {
-    return new Response(
-      JSON.stringify({ error: "id is required" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "id is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
   if (!body.publicKey) {
-    return new Response(
-      JSON.stringify({ error: "publicKey is required" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "publicKey is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
   if (body.signCount === undefined || body.signCount === null) {
-    return new Response(
-      JSON.stringify({ error: "signCount is required" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "signCount is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
   // Insert into DB

@@ -7,10 +7,9 @@ This project implements a minimal identity service that binds a WebAuthn credent
 Clone the repo, copy the example environment file, install dependencies, and start the dev server:
 
 ```bash
-cp .env.example .env
 npm install
 npm run dev
-````
+```
 
 ## Important Note About Astro DB During Development
 
@@ -18,8 +17,8 @@ This project uses Astro DB, which stores your data in the `.astro/` directory. B
 
 This creates a mismatch:
 
-* Your browser persists your WebAuthn credential in localStorage
-* Astro DB resets on each rebuild
+- Your browser persists your WebAuthn credential in localStorage
+- Astro DB resets on each rebuild
 
 The result is that your browser will try to authenticate with a credential that the server no longer recognizes.
 
@@ -40,4 +39,3 @@ db/seed.ts
 with your current identity data. This seed file preloads your WebAuthn credential and linked GitHub identity on each dev server startup.
 
 Your browser keeps its stored credential and Astro DB reloads matching data, making WebAuthn development reliable without having to clear localStorage or re-register each time.
-
