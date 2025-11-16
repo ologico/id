@@ -49,7 +49,16 @@ export async function GET(context: any) {
       }).toString()
     });
 
-    const tokenData = await tokenResponse.json();
+    const responseText = await tokenResponse.text();
+    console.log('Token response status:', tokenResponse.status);
+    console.log('Token response text:', responseText);
+
+    let tokenData;
+    try {
+      tokenData = JSON.parse(responseText);
+    } catch (e) {
+      return new Response(`Invalid JSON response: ${responseText}`, { status: 500 });
+    }
 
     if (tokenData.error) {
       return new Response(
