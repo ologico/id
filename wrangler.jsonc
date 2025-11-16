@@ -21,7 +21,7 @@
     }
   ],
   "vars": {
-    "ASTRO_DB_REMOTE_URL": "https://id-h-infinite-logic.aws-us-west-2.turso.io"
+    "ASTRO_DB_REMOTE_URL": "libsql://id-h-infinite-logic.aws-us-west-2.turso.io"
   },
   "routes": [
     {
