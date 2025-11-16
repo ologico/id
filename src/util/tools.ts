@@ -128,8 +128,6 @@ export async function logout(): Promise<string> {
     });
 
     if (res.ok) {
-      // Clear stored credential ID from localStorage
-      localStorage.removeItem(authStorageKey);
       return "Logged out successfully!";
     }
 
